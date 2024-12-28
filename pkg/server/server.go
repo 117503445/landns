@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"net"
 
@@ -15,8 +14,8 @@ type Server struct {
 	grpcgen.DHCPManagerServer
 }
 
-func (s *Server) GetLeases(context.Context, *emptypb.Empty) (*grpcgen.GetLeasesResponse, error) {
-	return &grpcgen.GetLeasesResponse{}, nil
+func (s *Server) GetLeases(_ *emptypb.Empty, stream grpc.ServerStreamingServer[grpcgen.GetLeasesResponse]) error {
+	return nil
 }
 
 func NewServer() *Server {

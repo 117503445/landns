@@ -11,7 +11,7 @@ tasks:
     desc: "Run the DHCP Manager"
     cmds:
       - docker compose up -d
-      - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o dhcp-manager main.go
+      - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o dhcp-manager ./cmd/dhcp-manager/main.go
       - docker compose exec dhcp-manager-dev pkill dhcp-manager || true
       - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 rm -f /tmp/dhcp-manager || true
       - docker compose exec dhcp-manager-dev scp dhcp-manager root@192.168.100.101:/tmp
@@ -20,9 +20,9 @@ tasks:
   run-localdns:
     desc: "Run the localdns"
     cmds:
+      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 pkill localdns || true
       - docker compose up -d
       - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o localdns ./cmd/localdns/main.go
-      - docker compose exec dhcp-manager-dev pkill localdns || true
       - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 rm -f /tmp/localdns || true
       - docker compose exec dhcp-manager-dev scp localdns root@192.168.100.101:/tmp
       - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 /tmp/localdns
@@ -36,3 +36,13 @@ tasks:
     desc: "Rebuild the development image"
     cmds:
       - docker compose up -d --build
+  
+  query:
+    desc: "Query the DHCP Manager"
+    cmds:
+      - ssh root@192.168.100.101 "dig @127.0.0.1 baidu.com A"
+  
+  ssh:
+    desc: "SSH to the server"
+    cmds:
+      - ssh root@192.168.100.101

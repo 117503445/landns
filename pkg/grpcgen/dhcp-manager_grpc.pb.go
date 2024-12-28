@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DHCPManagerClient interface {
-	GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetLeasesResponse, error)
+	GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetLeasesResponse], error)
 }
 
 type dHCPManagerClient struct {
@@ -38,21 +38,30 @@ func NewDHCPManagerClient(cc grpc.ClientConnInterface) DHCPManagerClient {
 	return &dHCPManagerClient{cc}
 }
 
-func (c *dHCPManagerClient) GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetLeasesResponse, error) {
+func (c *dHCPManagerClient) GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetLeasesResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetLeasesResponse)
-	err := c.cc.Invoke(ctx, DHCPManager_GetLeases_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &DHCPManager_ServiceDesc.Streams[0], DHCPManager_GetLeases_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[emptypb.Empty, GetLeasesResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type DHCPManager_GetLeasesClient = grpc.ServerStreamingClient[GetLeasesResponse]
 
 // DHCPManagerServer is the server API for DHCPManager service.
 // All implementations must embed UnimplementedDHCPManagerServer
 // for forward compatibility.
 type DHCPManagerServer interface {
-	GetLeases(context.Context, *emptypb.Empty) (*GetLeasesResponse, error)
+	GetLeases(*emptypb.Empty, grpc.ServerStreamingServer[GetLeasesResponse]) error
 	mustEmbedUnimplementedDHCPManagerServer()
 }
 
@@ -63,8 +72,8 @@ type DHCPManagerServer interface {
 // pointer dereference when methods are called.
 type UnimplementedDHCPManagerServer struct{}
 
-func (UnimplementedDHCPManagerServer) GetLeases(context.Context, *emptypb.Empty) (*GetLeasesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLeases not implemented")
+func (UnimplementedDHCPManagerServer) GetLeases(*emptypb.Empty, grpc.ServerStreamingServer[GetLeasesResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method GetLeases not implemented")
 }
 func (UnimplementedDHCPManagerServer) mustEmbedUnimplementedDHCPManagerServer() {}
 func (UnimplementedDHCPManagerServer) testEmbeddedByValue()                     {}
@@ -87,23 +96,16 @@ func RegisterDHCPManagerServer(s grpc.ServiceRegistrar, srv DHCPManagerServer) {
 	s.RegisterService(&DHCPManager_ServiceDesc, srv)
 }
 
-func _DHCPManager_GetLeases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
+func _DHCPManager_GetLeases_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(DHCPManagerServer).GetLeases(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DHCPManager_GetLeases_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DHCPManagerServer).GetLeases(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(DHCPManagerServer).GetLeases(m, &grpc.GenericServerStream[emptypb.Empty, GetLeasesResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type DHCPManager_GetLeasesServer = grpc.ServerStreamingServer[GetLeasesResponse]
 
 // DHCPManager_ServiceDesc is the grpc.ServiceDesc for DHCPManager service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -111,12 +113,13 @@ func _DHCPManager_GetLeases_Handler(srv interface{}, ctx context.Context, dec fu
 var DHCPManager_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "dhcp_manager.DHCPManager",
 	HandlerType: (*DHCPManagerServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "GetLeases",
-			Handler:    _DHCPManager_GetLeases_Handler,
+			StreamName:    "GetLeases",
+			Handler:       _DHCPManager_GetLeases_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "pkg/grpcgen/dhcp-manager.proto",
 }
