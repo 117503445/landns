@@ -15,8 +15,8 @@ type Server struct {
 	grpcgen.DHCPManagerServer
 }
 
-func (s *Server) GetLeases(context.Context, *emptypb.Empty) (*grpcgen.Lease, error) {
-	return &grpcgen.Lease{}, nil
+func (s *Server) GetLeases(context.Context, *emptypb.Empty) (*grpcgen.GetLeasesResponse, error) {
+	return &grpcgen.GetLeasesResponse{}, nil
 }
 
 func NewServer() *Server {

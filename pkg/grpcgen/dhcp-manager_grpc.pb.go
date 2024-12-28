@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DHCPManagerClient interface {
-	GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Lease, error)
+	GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetLeasesResponse, error)
 }
 
 type dHCPManagerClient struct {
@@ -38,9 +38,9 @@ func NewDHCPManagerClient(cc grpc.ClientConnInterface) DHCPManagerClient {
 	return &dHCPManagerClient{cc}
 }
 
-func (c *dHCPManagerClient) GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Lease, error) {
+func (c *dHCPManagerClient) GetLeases(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetLeasesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Lease)
+	out := new(GetLeasesResponse)
 	err := c.cc.Invoke(ctx, DHCPManager_GetLeases_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *dHCPManagerClient) GetLeases(ctx context.Context, in *emptypb.Empty, op
 // All implementations must embed UnimplementedDHCPManagerServer
 // for forward compatibility.
 type DHCPManagerServer interface {
-	GetLeases(context.Context, *emptypb.Empty) (*Lease, error)
+	GetLeases(context.Context, *emptypb.Empty) (*GetLeasesResponse, error)
 	mustEmbedUnimplementedDHCPManagerServer()
 }
 
@@ -63,7 +63,7 @@ type DHCPManagerServer interface {
 // pointer dereference when methods are called.
 type UnimplementedDHCPManagerServer struct{}
 
-func (UnimplementedDHCPManagerServer) GetLeases(context.Context, *emptypb.Empty) (*Lease, error) {
+func (UnimplementedDHCPManagerServer) GetLeases(context.Context, *emptypb.Empty) (*GetLeasesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLeases not implemented")
 }
 func (UnimplementedDHCPManagerServer) mustEmbedUnimplementedDHCPManagerServer() {}

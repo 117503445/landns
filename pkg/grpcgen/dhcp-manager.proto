@@ -13,6 +13,10 @@ message Lease{
     string hostname = 3;
 }
 
+message GetLeasesResponse{
+    repeated Lease leases = 1;
+}
+
 service DHCPManager {
-    rpc GetLeases(google.protobuf.Empty) returns (Lease);
+    rpc GetLeases(google.protobuf.Empty) returns (GetLeasesResponse);
 }
