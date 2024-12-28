@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"sync"
-	"time"
 
 	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/rs/zerolog/log"
@@ -13,7 +12,7 @@ import (
 )
 
 type Server struct {
-	grpcgen.DHCPManagerServer
+	grpcgen
 	leaseChan <-chan []*grpcgen.Lease
 	curLeases []*grpcgen.Lease
 	curLeasesLock sync.RWMutex

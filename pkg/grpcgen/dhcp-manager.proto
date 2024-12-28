@@ -18,5 +18,5 @@ message GetLeasesResponse{
 }
 
 service DHCPManager {
-    rpc GetLeases(google.protobuf.Empty) returns (stream GetLeasesResponse);
+    rpc GetLeases(google.protobuf.Empty) returns (GetLeasesResponse);
 }

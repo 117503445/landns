@@ -30,7 +30,7 @@ tasks:
   proto:
     desc: "Generate protobuf"
     cmds:
-      - docker compose exec dhcp-manager-dev protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./pkg/grpcgen/dhcp-manager.proto
+      - docker compose exec dhcp-manager-dev protoc --go_out=. --go_opt=paths=source_relative --twirp_out=. ./pkg/grpcgen/dhcp-manager.proto
 
   rebuild-dev-image:
     desc: "Rebuild the development image"
