@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/117503445/dhcp-manager/pkg/server"
 	"github.com/117503445/goutils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
@@ -8,8 +9,12 @@ import (
 
 func main() {
 	goutils.InitZeroLog()
-
 	log.Info().Msg("Hello, World!")
+
+	go func() {
+		server.NewServer().Start(8080)
+	}()
+
 
 	// Create new watcher.
 	watcher, err := fsnotify.NewWatcher()
