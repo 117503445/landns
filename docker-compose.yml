@@ -1,0 +1,14 @@
+services:
+  dhcp-manager-dev:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    volumes:
+        - ./:/workspace
+        - dhcp-manager-dev-vsc:/root/.vscode-server
+        - ~/.ssh:/root/.ssh
+    stdin_open: true
+    tty: true
+
+volumes:
+  dhcp-manager-dev-vsc:
