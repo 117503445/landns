@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/117503445/dhcp-manager/pkg/client"
-	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/117503445/goutils"
+	"github.com/117503445/landns/pkg/client"
+	"github.com/117503445/landns/pkg/grpcgen"
 	"github.com/miekg/dns"
 	"github.com/rs/zerolog/log"
 )

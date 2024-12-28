@@ -5,32 +5,32 @@ tasks:
     desc: "The default task" 
     cmds:
       - go-task run-localdns
-      # - go-task run-dhcp-manager
+      # - go-task run-landns
 
-  run-dhcp-manager:
+  run-landns:
     desc: "Run the DHCP Manager"
     cmds:
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 pkill dhcp-manager || true
+      - docker compose exec landns-dev ssh root@192.168.100.101 pkill landns || true
       - docker compose up -d
-      - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o dhcp-manager ./cmd/dhcp-manager/main.go
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 rm -f /tmp/dhcp-manager || true
-      - docker compose exec dhcp-manager-dev scp dhcp-manager root@192.168.100.101:/tmp
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 /tmp/dhcp-manager
+      - docker compose exec --env CGO_ENABLED=0 landns-dev go build -o landns ./cmd/landns/main.go
+      - docker compose exec landns-dev ssh root@192.168.100.101 rm -f /tmp/landns || true
+      - docker compose exec landns-dev scp landns root@192.168.100.101:/tmp
+      - docker compose exec landns-dev ssh root@192.168.100.101 /tmp/landns
 
   run-localdns:
     desc: "Run the localdns"
     cmds:
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 pkill localdns || true
+      - docker compose exec landns-dev ssh root@192.168.100.101 pkill localdns || true
       - docker compose up -d
-      - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o localdns ./cmd/localdns/main.go
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 rm -f /tmp/localdns || true
-      - docker compose exec dhcp-manager-dev scp localdns root@192.168.100.101:/tmp
-      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 /tmp/localdns
+      - docker compose exec --env CGO_ENABLED=0 landns-dev go build -o localdns ./cmd/landns/main.go
+      - docker compose exec landns-dev ssh root@192.168.100.101 rm -f /tmp/localdns || true
+      - docker compose exec landns-dev scp localdns root@192.168.100.101:/tmp
+      - docker compose exec landns-dev ssh root@192.168.100.101 /tmp/localdns
 
   proto:
     desc: "Generate protobuf"
     cmds:
-      - docker compose exec dhcp-manager-dev protoc --go_out=. --go_opt=paths=source_relative --twirp_out=. ./pkg/grpcgen/dhcp-manager.proto
+      - docker compose exec landns-dev protoc --go_out=. --go_opt=paths=source_relative --twirp_out=. ./pkg/rpcgen/landns.proto
 
   rebuild-dev-image:
     desc: "Rebuild the development image"

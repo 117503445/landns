@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package dhcp_manager;
+package landns;
 
-option go_package = "pkg/grpcgen";
+option go_package = "pkg/rpcgen";
 
 import "google/protobuf/empty.proto";
 // import "google/protobuf/any.proto";
@@ -13,10 +13,18 @@ message Lease{
     string hostname = 3;
 }
 
+message SetLeasesRequest{
+    repeated Lease leases = 1;
+}
+
+service LanDNS {
+    rpc SetLeases(SetLeasesRequest) returns (google.protobuf.Empty);
+}
+
 message GetLeasesResponse{
     repeated Lease leases = 1;
 }
 
-service DHCPManager {
+service LanDNSAgent {
     rpc GetLeases(google.protobuf.Empty) returns (GetLeasesResponse);
 }

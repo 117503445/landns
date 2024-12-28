@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/117503445/goutils"
+	"github.com/117503445/landns/pkg/grpcgen"
 	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
 )

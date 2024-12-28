@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/117503445/dhcp-manager/pkg/grpcgen"
+	"github.com/117503445/landns/pkg/grpcgen"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

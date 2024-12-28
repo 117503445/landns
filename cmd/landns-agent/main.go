@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/117503445/dhcp-manager/pkg/grpcgen"
-	"github.com/117503445/dhcp-manager/pkg/loader/kea"
-	"github.com/117503445/dhcp-manager/pkg/server"
 	"github.com/117503445/goutils"
+	"github.com/117503445/landns/pkg/grpcgen"
+	"github.com/117503445/landns/pkg/loader/kea"
+	"github.com/117503445/landns/pkg/server"
+
 	// "github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
 )

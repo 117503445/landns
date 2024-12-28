@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/117503445/dhcp-manager/pkg/grpcgen"
+	"github.com/117503445/landns/pkg/grpcgen"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -13,8 +13,8 @@ import (
 
 type Server struct {
 	grpcgen
-	leaseChan <-chan []*grpcgen.Lease
-	curLeases []*grpcgen.Lease
+	leaseChan     <-chan []*grpcgen.Lease
+	curLeases     []*grpcgen.Lease
 	curLeasesLock sync.RWMutex
 
 	streams     []grpc.ServerStream
@@ -25,7 +25,6 @@ func (s *Server) GetLeases(_ *emptypb.Empty, stream grpc.ServerStreamingServer[g
 	s.curLeasesLock.RLock()
 	stream.SendMsg(&grpcgen.GetLeasesResponse{Leases: s.curLeases})
 	s.curLeasesLock.RUnlock()
-
 
 	s.streamsLock.Lock()
 	defer s.streamsLock.Unlock()

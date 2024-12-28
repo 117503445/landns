@@ -1,4 +1,4 @@
-module github.com/117503445/dhcp-manager
+module github.com/117503445/landns
 
 go 1.23.4
 
