@@ -15,7 +15,7 @@ func main() {
 
 	leaseChan := make(chan []*grpcgen.Lease)
 	go func() {
-		server.NewServer(leaseChan).Start(8080)
+		server.NewServer(leaseChan).Start(4358)
 	}()
 
 	// go func() {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/rs/zerolog/log"
@@ -14,15 +15,23 @@ import (
 type Server struct {
 	grpcgen.DHCPManagerServer
 	leaseChan <-chan []*grpcgen.Lease
+	curLeases []*grpcgen.Lease
+	curLeasesLock sync.RWMutex
 
 	streams     []grpc.ServerStream
 	streamsLock sync.RWMutex
 }
 
 func (s *Server) GetLeases(_ *emptypb.Empty, stream grpc.ServerStreamingServer[grpcgen.GetLeasesResponse]) error {
+	s.curLeasesLock.RLock()
+	stream.SendMsg(&grpcgen.GetLeasesResponse{Leases: s.curLeases})
+	s.curLeasesLock.RUnlock()
+
+
 	s.streamsLock.Lock()
 	defer s.streamsLock.Unlock()
 	s.streams = append(s.streams, stream)
+
 	return nil
 }
 
@@ -30,6 +39,7 @@ func NewServer(leaseChan <-chan []*grpcgen.Lease) *Server {
 	return &Server{
 		leaseChan: leaseChan,
 		streams:   make([]grpc.ServerStream, 0),
+		curLeases: make([]*grpcgen.Lease, 0),
 	}
 }
 
@@ -78,6 +88,10 @@ func (s *Server) Start(port int) {
 		}
 
 		for leases := range s.leaseChan {
+			s.curLeasesLock.Lock()
+			s.curLeases = leases
+			s.curLeasesLock.Unlock()
+
 			broadcast(leases)
 		}
 	}()

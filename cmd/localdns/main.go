@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/117503445/dhcp-manager/pkg/client"
+	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/117503445/goutils"
 	"github.com/miekg/dns"
 	"github.com/rs/zerolog/log"
@@ -30,6 +32,13 @@ func main() {
 	goutils.InitZeroLog()
 
 	log.Info().Msg("localdns start")
+
+	leaseChan := make(chan []*grpcgen.Lease)
+
+	go func() {
+		c := client.NewClient("localhost:4358", leaseChan)
+		c.Start()
+	}()
 
 	// Create a new UDP server on port 53
 	udpServer := &dns.Server{Addr: ":53", Net: "udp"}

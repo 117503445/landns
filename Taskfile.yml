@@ -10,9 +10,9 @@ tasks:
   run-dhcp-manager:
     desc: "Run the DHCP Manager"
     cmds:
+      - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 pkill dhcp-manager || true
       - docker compose up -d
       - docker compose exec --env CGO_ENABLED=0 dhcp-manager-dev go build -o dhcp-manager ./cmd/dhcp-manager/main.go
-      - docker compose exec dhcp-manager-dev pkill dhcp-manager || true
       - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 rm -f /tmp/dhcp-manager || true
       - docker compose exec dhcp-manager-dev scp dhcp-manager root@192.168.100.101:/tmp
       - docker compose exec dhcp-manager-dev ssh root@192.168.100.101 /tmp/dhcp-manager

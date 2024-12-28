@@ -8,6 +8,7 @@ import (
 	"github.com/117503445/dhcp-manager/pkg/grpcgen"
 	"github.com/117503445/goutils"
 	"github.com/fsnotify/fsnotify"
+	"github.com/rs/zerolog/log"
 )
 
 // Parse parses the content of a Kea lease file
@@ -75,6 +76,7 @@ func ParseStream(fileName string, leaseChan chan<- []*grpcgen.Lease) error {
 		if err != nil {
 			return err
 		}
+		log.Info().Interface("leases", leases).Msg("Parsed leases")
 		leaseChan <- leases
 		return nil
 	}
