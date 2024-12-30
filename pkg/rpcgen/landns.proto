@@ -15,6 +15,7 @@ message Lease{
 
 message SetLeasesRequest{
     repeated Lease leases = 1;
+    string agentName = 2;
 }
 
 service LanDNS {

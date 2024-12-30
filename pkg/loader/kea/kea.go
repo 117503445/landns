@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/117503445/goutils"
-	"github.com/117503445/landns/pkg/grpcgen"
+	"github.com/117503445/landns/pkg/rpcgen"
 	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
 )
 
 // Parse parses the content of a Kea lease file
 // example content: see assets/dhcp4.leases
-func Parse(content string) ([]*grpcgen.Lease, error) {
+func Parse(content string) ([]*rpcgen.Lease, error) {
 	reader := csv.NewReader(strings.NewReader(content))
 
 	header, err := reader.Read()
@@ -38,13 +38,13 @@ func Parse(content string) ([]*grpcgen.Lease, error) {
 		return nil, errors.New("hwaddr not found")
 	}
 
-	var leases []*grpcgen.Lease
+	var leases []*rpcgen.Lease
 	for {
 		record, err := reader.Read()
 		if err != nil {
 			break
 		}
-		leases = append(leases, &grpcgen.Lease{
+		leases = append(leases, &rpcgen.Lease{
 			Ip:       record[ipIndex],
 			Hostname: record[hostnameIndex],
 			Mac:      record[macIndex],
@@ -52,11 +52,11 @@ func Parse(content string) ([]*grpcgen.Lease, error) {
 	}
 
 	// only keep the latest lease for each mac
-	macMap := make(map[string]*grpcgen.Lease)
+	macMap := make(map[string]*rpcgen.Lease)
 	for _, lease := range leases {
 		macMap[lease.Mac] = lease
 	}
-	leases = make([]*grpcgen.Lease, 0, len(macMap))
+	leases = make([]*rpcgen.Lease, 0, len(macMap))
 	for _, lease := range macMap {
 		leases = append(leases, lease)
 	}
@@ -65,7 +65,7 @@ func Parse(content string) ([]*grpcgen.Lease, error) {
 }
 
 // ParseStream watches the Kea lease file and sends the parsed leases to the leaseChan
-func ParseStream(fileName string, leaseChan chan<- []*grpcgen.Lease) error {
+func ParseStream(fileName string, leaseChan chan<- []*rpcgen.Lease) error {
 	tryParse := func() error {
 
 		content, err := goutils.ReadText(fileName)
