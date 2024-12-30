@@ -1,27 +1,46 @@
 package main
 
 import (
+	"context"
+	"net/http"
+
 	"github.com/117503445/goutils"
-	"github.com/117503445/landns/pkg/client"
 	"github.com/117503445/landns/pkg/dns"
-	"github.com/117503445/landns/pkg/grpcgen"
 	"github.com/117503445/landns/pkg/rpcgen"
+	"github.com/117503445/landns/pkg/store"
 	"github.com/rs/zerolog/log"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
-
-
 
 func main() {
 	goutils.InitZeroLog()
 
-	log.Info().Msg("localdns start")
-
-	leaseChan := make(chan []*rpcgen.Lease)
+	leasesStore := store.NewLeasesStore()
+	// leasesStore.SetLeases("agent1", []*rpcgen.Lease{
+	// 	{
+	// 		Ip:       "192.168.100.101",
+	// 		Hostname: "archlinux",
+	// 	}})
 
 	go func() {
-		c := client.NewClient("localhost:4358", leaseChan)
-		c.Start()
+		targets := []string{"http://localhost:4501"}
+		clients := make([]rpcgen.LanDNSAgent, len(targets))
+		for i, target := range targets {
+			clients[i] = rpcgen.NewLanDNSAgentProtobufClient(target, &http.Client{})
+		}
+		for _, client := range clients {
+			go func(client rpcgen.LanDNSAgent) {
+				resp, err := client.GetLeases(context.Background(), &emptypb.Empty{})
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to get leases")
+					return
+				}
+				leasesStore.SetLeases(resp.AgentName, resp.Leases)
+			}(client)
+		}
 	}()
 
-	dns.NewServer().Start()
+	log.Info().Msg("localdns start")
+
+	dns.NewServer(leasesStore).Start()
 }

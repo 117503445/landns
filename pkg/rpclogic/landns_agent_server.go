@@ -17,6 +17,8 @@ type LandnsAgentServer struct {
 	// leaseChan     <-chan []*rpcgen.Lease
 	curLeases     []*rpcgen.Lease
 	curLeasesLock sync.RWMutex
+
+	agentName string
 }
 
 // GetLeases(context.Context, *google_protobuf.Empty) (*GetLeasesResponse, error)
@@ -27,7 +29,7 @@ func (s *LandnsAgentServer) GetLeases(context.Context, *emptypb.Empty) (*rpcgen.
 	}, nil
 }
 
-func NewLandnsAgentServer() *LandnsAgentServer {
+func NewLandnsAgentServer(agentName string) *LandnsAgentServer {
 	return &LandnsAgentServer{
 		// leaseChan: leaseChan,
 		curLeases: make([]*rpcgen.Lease, 0),

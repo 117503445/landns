@@ -5,16 +5,15 @@ import (
 	"testing"
 
 	rpcgen "github.com/117503445/landns/pkg/rpcgen"
-
 )
 
 // TestMergeLeases tests the MergeLeases function with various scenarios.
 func TestMergeLeases(t *testing.T) {
 	tests := []struct {
-		name             string
-		leasesByTag      map[string][]*rpcgen.Lease
-		wantHostnameIp   map[string]string
-		wantRepeatLease  map[*rpcgen.Lease]string
+		name            string
+		leasesByTag     map[string][]*rpcgen.Lease
+		wantHostnameIp  map[string]string
+		wantRepeatLease map[*rpcgen.Lease]string
 	}{
 		{
 			name: "no_duplicates",
@@ -52,21 +51,21 @@ func TestMergeLeases(t *testing.T) {
 			wantRepeatLease: map[*rpcgen.Lease]string{},
 		},
 		{
-			name:             "empty_input",
-			leasesByTag:      map[string][]*rpcgen.Lease{},
-			wantHostnameIp:   map[string]string{},
-			wantRepeatLease:  make(map[*rpcgen.Lease]string),
+			name:            "empty_input",
+			leasesByTag:     map[string][]*rpcgen.Lease{},
+			wantHostnameIp:  map[string]string{},
+			wantRepeatLease: make(map[*rpcgen.Lease]string),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotHostnameIp, gotRepeatLease := MergeLeases(tt.leasesByTag)
-			
+			gotHostnameIp, gotRepeatLease := mergeLeases(tt.leasesByTag)
+
 			if !reflect.DeepEqual(gotHostnameIp, tt.wantHostnameIp) {
 				t.Errorf("MergeLeases() gotHostnameIp = %v, want %v", gotHostnameIp, tt.wantHostnameIp)
 			}
-			
+
 			if !compareLeaseMaps(gotRepeatLease, tt.wantRepeatLease) {
 				t.Errorf("MergeLeases() gotRepeatLease = %v, want %v", gotRepeatLease, tt.wantRepeatLease)
 			}
