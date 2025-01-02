@@ -23,7 +23,7 @@ go.work.sum
 
 # env file
 .env
-dhcp-manager
-!cmd/dhcp-manager
-localdns
-!cmd/localdns
+landns
+!cmd/landns
+landns-agent
+!cmd/landns-agent

@@ -4,28 +4,20 @@ tasks:
   default:
     desc: "The default task" 
     cmds:
-      - go-task run-localdns
+      - docker compose up -d
+      - goreman start
+      # - go-task run-localdns
       # - go-task run-landns
 
   run-landns:
-    desc: "Run the DHCP Manager"
+    desc: "run landns"
     cmds:
-      - docker compose exec landns-dev ssh root@192.168.100.101 pkill landns || true
-      - docker compose up -d
-      - docker compose exec --env CGO_ENABLED=0 landns-dev go build -o landns ./cmd/landns/main.go
-      - docker compose exec landns-dev ssh root@192.168.100.101 rm -f /tmp/landns || true
-      - docker compose exec landns-dev scp landns root@192.168.100.101:/tmp
-      - docker compose exec landns-dev ssh root@192.168.100.101 /tmp/landns
+      - docker compose exec --workdir /workspace/scripts/dev landns-dev go run main.go --bin landns
 
-  run-localdns:
-    desc: "Run the localdns"
+  run-landns-agent:
+    desc: "run landns agent"
     cmds:
-      - docker compose exec landns-dev ssh root@192.168.100.101 pkill localdns || true
-      - docker compose up -d
-      - docker compose exec --env CGO_ENABLED=0 landns-dev go build -o localdns ./cmd/landns/main.go
-      - docker compose exec landns-dev ssh root@192.168.100.101 rm -f /tmp/localdns || true
-      - docker compose exec landns-dev scp localdns root@192.168.100.101:/tmp
-      - docker compose exec landns-dev ssh root@192.168.100.101 /tmp/localdns
+      - docker compose exec --workdir /workspace/scripts/dev landns-dev go run main.go --bin landns-agent
 
   proto:
     desc: "Generate protobuf"
@@ -40,7 +32,7 @@ tasks:
   query:
     desc: "Query the DHCP Manager"
     cmds:
-      - ssh root@192.168.100.101 "dig @127.0.0.1 baidu.com A"
+      - ssh root@192.168.100.101 "dig @127.0.0.1 archlinux.lan A"
   
   ssh:
     desc: "SSH to the server"
