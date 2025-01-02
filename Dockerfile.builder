@@ -4,7 +4,7 @@ RUN go install github.com/twitchtv/twirp/protoc-gen-twirp@latest && go install g
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
-RUN apk add --no-cache protobuf
+RUN apk add --no-cache protobuf-dev
 
 ENV CGO_ENABLED=0
 
