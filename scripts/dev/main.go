@@ -30,9 +30,9 @@ func main() {
 	goutils.ExecOpt.Cwd = dirRoot
 
 	// CGO_ENABLED=0 landns-dev go build -o landns ./cmd/landns/main.go
-	goutils.Exec(fmt.Sprintf("go build -o %v ./cmd/%v/main.go", bin, bin), goutils.WithEnv{
-		"CGO_ENABLED": "0",
-	})
+	// goutils.Exec(fmt.Sprintf("go build -o %v ./cmd/%v/main.go", bin, bin), goutils.WithEnv{
+	// 	"CGO_ENABLED": "0",
+	// })
 	goutils.Exec(fmt.Sprintf("ssh %v pkill %v", target, bin), goutils.WithExecutedHandlerSlient{})
 	goutils.Exec(fmt.Sprintf("ssh %v rm -f /tmp/%v", target, bin), goutils.WithExecutedHandlerSlient{})
 	goutils.Exec(fmt.Sprintf("scp %v %v:/tmp", bin, target))

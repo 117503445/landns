@@ -5,9 +5,15 @@ tasks:
     desc: "The default task" 
     cmds:
       - docker compose up -d
+      - go-task build
       - goreman start
       # - go-task run-localdns
       # - go-task run-landns
+
+  build:
+    desc: "Build the project"
+    cmds:
+      - ./scripts/build.sh
 
   run-landns:
     desc: "run landns"
