@@ -15,16 +15,13 @@ import (
 
 func main() {
 	goutils.InitZeroLog()
-	log.Info().Msg("Landns agent started")
 
 	agentName := "agent1"
 
 	leaseChan := make(chan []*rpcgen.Lease)
-
 	agentServer := rpclogic.NewLandnsAgentServer(agentName)
 
 	go func() {
-		log.Info().Msg("Starting landns agent server on port 4501")
 		agentServer.Start(4501)
 	}()
 
@@ -44,13 +41,14 @@ func main() {
 
 		// leaseChan -> clients
 		for leases := range leaseChan {
-			log.Info().Interface("leases", leases).Msg("Parsed leases")
+			log.Info().Interface("leases", leases).Msg("leaseChan -> broadcast to clients")
 			agentServer.SetLeases(leases)
 
 			for i, client := range clients {
 				executors[i].AddTask(func() {
+					log.Debug().Str("target", targets[i]).Msg("Sending leases")
 					_, err := client.SetLeases(context.Background(), &rpcgen.SetLeasesRequest{
-						Leases: <-leaseChan,
+						Leases:    leases,
 						AgentName: agentName,
 					})
 					if err != nil {

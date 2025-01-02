@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/117503445/landns/pkg/rpcgen"
+	"github.com/rs/zerolog/log"
 	// "github.com/rs/zerolog/log"
 )
 
@@ -21,7 +22,7 @@ func NewLeasesStore() *LeasesStore {
 	}
 }
 
-func (s *LeasesStore) GetIpByHostname(hostname string) (net.IP) {
+func (s *LeasesStore) GetIpByHostname(hostname string) net.IP {
 	s.RLock()
 	defer s.RUnlock()
 	hostName := s.HostnameIpMap[hostname]
@@ -70,4 +71,5 @@ func (s *LeasesStore) SetLeases(tag string, leases []*rpcgen.Lease) {
 	s.leasesByTag[tag] = leases
 
 	s.HostnameIpMap, _ = mergeLeases(s.leasesByTag)
+	log.Info().Interface("leases", s.HostnameIpMap).Msg("leases updated")
 }

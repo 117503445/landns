@@ -76,7 +76,7 @@ func ParseStream(fileName string, leaseChan chan<- []*rpcgen.Lease) error {
 		if err != nil {
 			return err
 		}
-		log.Info().Interface("leases", leases).Msg("Parsed leases")
+		log.Info().Interface("leases", leases).Msg("file changed -> leaseChan")
 		leaseChan <- leases
 		return nil
 	}

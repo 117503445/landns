@@ -1,13 +1,13 @@
 package rpclogic
 
-import "fmt"
-
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/117503445/landns/pkg/rpcgen"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -43,6 +43,7 @@ func (s *LandnsAgentServer) SetLeases(leases []*rpcgen.Lease) {
 }
 
 func (s *LandnsAgentServer) Start(port int) {
+	log.Info().Int("port", port).Msg("Starting landns agent server")
 	twirpHandler := rpcgen.NewLanDNSAgentServer(s)
 	http.ListenAndServe(":"+fmt.Sprint(port), twirpHandler)
 }

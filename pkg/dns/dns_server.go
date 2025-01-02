@@ -16,16 +16,15 @@ type DNSServer struct {
 func NewServer(leasesStore *store.LeasesStore) *DNSServer {
 	udpServer := &dns.Server{Addr: ":53", Net: "udp"}
 	dns.HandleFunc(".", func(w dns.ResponseWriter, r *dns.Msg) {
-		log.Info().Msg("Got request")
+		// log.Info().Msg("Got request")
 		resp := new(dns.Msg)
 		resp.SetReply(r)
 		resp.Authoritative = true
 
 		for _, q := range resp.Question {
-			log.Debug().Str("qname", q.Name).Str("qtype", dns.TypeToString[q.Qtype]).Msg("Question")
+			// log.Debug().Str("qname", q.Name).Str("qtype", dns.TypeToString[q.Qtype]).Msg("Question")
 			// qname like archlinux.lan.
 			if q.Qtype == dns.TypeA {
-
 				if strings.HasSuffix(q.Name, ".lan.") {
 					hostname := strings.TrimSuffix(q.Name, ".lan.")
 					ip := leasesStore.GetIpByHostname(hostname)
@@ -53,6 +52,7 @@ func NewServer(leasesStore *store.LeasesStore) *DNSServer {
 }
 
 func (s *DNSServer) Start() {
+	log.Info().Msg("DNS server started on port 53")
 	if err := s.udpServer.ListenAndServe(); err != nil {
 		log.Fatal().Err(err).Msg("Failed to set udp listener")
 	}
