@@ -47,5 +47,5 @@ func main() {
 		}
 	}()
 
-	dns.NewServer(leasesStore).Start()
+	dns.NewServer(leasesStore).Start(4053)
 }

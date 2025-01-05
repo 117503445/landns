@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/117503445/landns/pkg/store"
@@ -14,7 +15,6 @@ type DNSServer struct {
 }
 
 func NewServer(leasesStore *store.LeasesStore) *DNSServer {
-	udpServer := &dns.Server{Addr: ":53", Net: "udp"}
 	dns.HandleFunc(".", func(w dns.ResponseWriter, r *dns.Msg) {
 		// log.Info().Msg("Got request")
 		resp := new(dns.Msg)
@@ -46,13 +46,16 @@ func NewServer(leasesStore *store.LeasesStore) *DNSServer {
 	})
 
 	return &DNSServer{
-		udpServer:  udpServer,
 		leaseStore: leasesStore,
 	}
 }
 
-func (s *DNSServer) Start() {
-	log.Info().Msg("DNS server started on port 53")
+func (s *DNSServer) Start(port int) {
+	addr := fmt.Sprintf(":%d", port)
+	udpServer := &dns.Server{Addr: addr, Net: "udp"}
+	s.udpServer = udpServer
+
+	log.Info().Int("port", port).Msg("Starting dns server")
 	if err := s.udpServer.ListenAndServe(); err != nil {
 		log.Fatal().Err(err).Msg("Failed to set udp listener")
 	}
