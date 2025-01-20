@@ -79,7 +79,9 @@ func ParseStream(dir string, leaseChan chan<- []*rpcgen.Lease) error {
 				log.Fatal().Interface("file", file).Msg("sub dir should not in lease dir")
 			}
 
-			content, err := goutils.ReadText(dir)
+			fullFilePath := dir + "/" + file.Name()
+
+			content, err := goutils.ReadText(fullFilePath)
 			if err != nil {
 				return err
 			}
