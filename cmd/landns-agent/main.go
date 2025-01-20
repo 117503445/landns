@@ -60,7 +60,7 @@ func main() {
 	}()
 
 	// file changed -> leaseChan
-	err := kea.ParseStream("/var/lib/kea/dhcp4.leases", leaseChan)
+	err := kea.ParseStream("/var/lib/kea", leaseChan)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to parse stream")
 	}

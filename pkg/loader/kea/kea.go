@@ -3,6 +3,7 @@ package kea
 import (
 	"encoding/csv"
 	"errors"
+	"os"
 	"strings"
 
 	"github.com/117503445/goutils"
@@ -65,17 +66,30 @@ func Parse(content string) ([]*rpcgen.Lease, error) {
 }
 
 // ParseStream watches the Kea lease file and sends the parsed leases to the leaseChan
-func ParseStream(fileName string, leaseChan chan<- []*rpcgen.Lease) error {
+func ParseStream(dir string, leaseChan chan<- []*rpcgen.Lease) error {
 	tryParse := func() error {
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			return err
+		}
+		leases := make([]*rpcgen.Lease, 0)
 
-		content, err := goutils.ReadText(fileName)
-		if err != nil {
-			return err
+		for _, file := range files {
+			if file.IsDir() {
+				log.Fatal().Interface("file", file).Msg("sub dir should not in lease dir")
+			}
+
+			content, err := goutils.ReadText(dir)
+			if err != nil {
+				return err
+			}
+			curLeases, err := Parse(content)
+			if err != nil {
+				return err
+			}
+			leases = append(leases, curLeases...)
 		}
-		leases, err := Parse(content)
-		if err != nil {
-			return err
-		}
+
 		log.Info().Interface("leases", leases).Msg("file changed -> leaseChan")
 		leaseChan <- leases
 		return nil
@@ -90,7 +104,7 @@ func ParseStream(fileName string, leaseChan chan<- []*rpcgen.Lease) error {
 	}
 	defer watcher.Close()
 
-	err = watcher.Add(fileName)
+	err = watcher.Add(dir)
 	if err != nil {
 		return err
 	}
