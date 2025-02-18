@@ -1,0 +1,12 @@
+services:
+  dev:
+    environment:
+      - CODE_SERVER_PASSWORD=sVgmpMixNFm327
+    networks:
+      - frp
+    labels:
+      - frpc.vsc-imini800-dev-landns=4444
+
+networks:
+  frp:
+    external: true
