@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/117503445/goutils"
+	"github.com/117503445/landns/pkg/cli"
 	"github.com/117503445/landns/pkg/dns"
 	"github.com/117503445/landns/pkg/rpcgen"
 	"github.com/117503445/landns/pkg/rpclogic"
@@ -13,10 +14,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-
-
 func main() {
 	goutils.InitZeroLog()
+
+	cli.LoadLandnsCli()
 
 	leasesStore := store.NewLeasesStore()
 	// leasesStore.SetLeases("agent1", []*rpcgen.Lease{
@@ -30,12 +31,11 @@ func main() {
 	}()
 
 	go func() {
-		targets := []string{"http://localhost:4501"}
-		log.Info().Strs("targets", targets).Msg("get leases from agents at start")
+		log.Info().Msg("get leases from agents at start")
 
-		clients := make([]rpcgen.LanDNSAgent, len(targets))
-		for i, target := range targets {
-			clients[i] = rpcgen.NewLanDNSAgentProtobufClient(target, &http.Client{})
+		clients := make([]rpcgen.LanDNSAgent, len(cli.LandnsCli.Targets))
+		for i, target := range cli.LandnsCli.Targets {
+			clients[i] = rpcgen.NewLanDNSAgentProtobufClient(target.Host, &http.Client{})
 		}
 		for _, client := range clients {
 			go func(client rpcgen.LanDNSAgent) {

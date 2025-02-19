@@ -15,7 +15,7 @@ var LandnsAgentCli struct {
 
 func LoadLandnsAgentCli() {
 	cfgFile := filepath.Dir(os.Args[0]) + "/config.toml"
-	log.Info().Str("cfgFile", cfgFile).Msg("Loading config")
+	// log.Info().Str("cfgFile", cfgFile).Msg("Loading config")
 	kong.Parse(&LandnsAgentCli, kong.Configuration(kongtoml.Loader, cfgFile))
 	log.Info().Interface("LandnsAgentCli", LandnsAgentCli).Send()
 }
