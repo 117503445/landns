@@ -1,45 +1,39 @@
-version: '3'
+version: "3"
 
 tasks:
   default:
-    desc: "The default task" 
-    cmds:
-      - docker compose up -d
-      - go-task build
-      - goreman start
-      # - go-task run-localdns
-      # - go-task run-landns
+    desc: "The default task"
+    deps:
+      - proto
 
-  build:
-    desc: "Build the project"
     cmds:
-      - ./scripts/build.sh
+      - task: build-bin
+      - goreman start
+
+  build-bin:
+    - go build -o ./cmd/landns/landns ./cmd/landns
+    - go build -o ./cmd/landns-agent/landns-agent ./cmd/landns-agent
 
   run-landns:
     desc: "run landns"
     cmds:
-      - docker compose exec --workdir /workspace/scripts/dev landns-dev go run main.go --bin landns
+      - go run ./cmd/landns
 
   run-landns-agent:
     desc: "run landns agent"
     cmds:
-      - docker compose exec --workdir /workspace/scripts/dev landns-dev go run main.go --bin landns-agent
+      - go run ./cmd/landns-agent
 
   proto:
     desc: "Generate protobuf"
     cmds:
-      - docker compose exec landns-dev protoc --go_out=. --go_opt=paths=source_relative --twirp_out=. ./pkg/rpcgen/landns.proto
+      - protoc --go_out=. --go_opt=paths=source_relative --twirp_out=. ./pkg/rpcgen/landns.proto
 
-  rebuild-dev-image:
-    desc: "Rebuild the development image"
-    cmds:
-      - docker compose up -d --build
-  
   query:
     desc: "Query the DHCP Manager"
     cmds:
       - ssh root@192.168.100.101 "dig @127.0.0.1 archlinux.lan A"
-  
+
   ssh:
     desc: "SSH to the server"
     cmds:
