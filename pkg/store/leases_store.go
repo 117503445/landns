@@ -36,7 +36,7 @@ func mergeLeases(leasesByTag map[string][]*rpcgen.Lease) (hostnameIpMap map[stri
 	hostnameIpMap = make(map[string]string)
 
 	repeatLeaseTagMap = make(map[*rpcgen.Lease]string)
-	repeatHostnameMap := make(map[string]interface{})
+	repeatHostnameMap := make(map[string]any)
 	hostNameLeaseMap := make(map[string]*rpcgen.Lease)
 
 	for tag, leases := range leasesByTag {

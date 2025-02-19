@@ -45,9 +45,16 @@ func Parse(content string) ([]*rpcgen.Lease, error) {
 		if err != nil {
 			break
 		}
+
+		hostName := record[hostnameIndex]
+		if hostName == "" || hostName == "." {
+			continue
+		}
+		hostName = strings.TrimSuffix(hostName, ".")
+
 		leases = append(leases, &rpcgen.Lease{
 			Ip:       record[ipIndex],
-			Hostname: record[hostnameIndex],
+			Hostname: hostName,
 			Mac:      record[macIndex],
 		})
 	}
