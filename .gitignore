@@ -27,3 +27,4 @@ landns
 !cmd/landns
 landns-agent
 !cmd/landns-agent
+config.toml

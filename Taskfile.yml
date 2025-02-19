@@ -32,9 +32,4 @@ tasks:
   query:
     desc: "Query the DHCP Manager"
     cmds:
-      - ssh root@192.168.100.101 "dig @127.0.0.1 archlinux.lan A"
-
-  ssh:
-    desc: "SSH to the server"
-    cmds:
-      - ssh root@192.168.100.101
+      - dig @127.0.0.1 archlinux.lan A -p 4053

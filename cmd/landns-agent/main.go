@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/117503445/goutils"
+	"github.com/117503445/landns/pkg/cli"
 	"github.com/117503445/landns/pkg/loader/kea"
 	"github.com/117503445/landns/pkg/rpcgen"
 	"github.com/117503445/landns/pkg/rpclogic"
@@ -15,6 +16,8 @@ import (
 
 func main() {
 	goutils.InitZeroLog()
+
+	cli.LoadLandnsAgentCli()
 
 	agentName := "agent1"
 
@@ -60,7 +63,7 @@ func main() {
 	}()
 
 	// file changed -> leaseChan
-	err := kea.ParseStream("/var/lib/kea", leaseChan)
+	err := kea.ParseStream(cli.LandnsAgentCli.KeaLeaseDir, leaseChan)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to parse stream")
 	}
