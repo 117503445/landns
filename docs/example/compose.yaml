@@ -1,0 +1,7 @@
+name: landns
+
+services:
+  landns:
+    image: 117503445/landns
+  landns-agent:
+    image: 117503445/landns-agent
