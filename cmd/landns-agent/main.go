@@ -19,7 +19,7 @@ func main() {
 
 	cli.LoadLandnsAgentCli()
 
-	agentName := "agent1"
+	agentName := cli.LandnsAgentCli.Name
 
 	leaseChan := make(chan []*rpcgen.Lease)
 	agentServer := rpclogic.NewLandnsAgentServer(agentName)
@@ -29,11 +29,10 @@ func main() {
 	}()
 
 	go func() {
-		targets := []string{"http://localhost:4500"}
 
-		clients := make([]rpcgen.LanDNS, len(targets))
-		for i, target := range targets {
-			clients[i] = rpcgen.NewLanDNSProtobufClient(target, &http.Client{})
+		clients := make([]rpcgen.LanDNS, len(cli.LandnsAgentCli.Targets))
+		for i, target := range cli.LandnsAgentCli.Targets {
+			clients[i] = rpcgen.NewLanDNSProtobufClient(target.Host, &http.Client{})
 		}
 
 		executors := make([]*util.LatestTaskExecutor, len(clients))
@@ -49,7 +48,7 @@ func main() {
 
 			for i, client := range clients {
 				executors[i].AddTask(func() {
-					log.Debug().Str("target", targets[i]).Msg("Sending leases")
+					log.Debug().Str("target", cli.LandnsAgentCli.Targets[i].Host).Msg("Sending leases")
 					_, err := client.SetLeases(context.Background(), &rpcgen.SetLeasesRequest{
 						Leases:    leases,
 						AgentName: agentName,

@@ -1,0 +1,5 @@
+[[targets]]
+host = "http://landns-agent1:4501"
+
+[[targets]]
+host = "http://landns-agent2:4501"

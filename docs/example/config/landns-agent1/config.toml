@@ -1,0 +1,4 @@
+kea-lease-dir="/workspace/assets"
+name = "agent1"
+[[targets]]
+host = "http://landns:4500"

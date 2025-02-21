@@ -3,5 +3,18 @@ name: landns
 services:
   landns:
     image: 117503445/landns
-  landns-agent:
+    ports:
+      - 4053:4053/udp
+    volumes:
+      - ./config/landns/config.toml:/workspace/config.toml
+  landns-agent1:
     image: 117503445/landns-agent
+    volumes:
+      - ./config/landns-agent1/config.toml:/workspace/config.toml
+      - ./config/landns-agent1/dhcp4.leases:/workspace/assets/dhcp4.leases
+  landns-agent2:
+    image: 117503445/landns-agent
+    volumes:
+      - ./config/landns-agent2/config.toml:/workspace/config.toml
+      - ./config/landns-agent2/dhcp4.leases:/workspace/assets/dhcp4.leases
+      

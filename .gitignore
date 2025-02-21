@@ -28,3 +28,8 @@ landns
 landns-agent
 !cmd/landns-agent
 config.toml
+
+!docs/example/config/landns
+!docs/example/config/landns/config.toml
+!docs/example/config/landns-agent1/config.toml
+!docs/example/config/landns-agent2/config.toml
